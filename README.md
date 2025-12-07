@@ -57,19 +57,11 @@ http://localhost:3000
 
 ### 👥 Users API
 
+#### Basic CRUD Operations
+
 **GET** `/users` - Lấy danh sách tất cả users
-```javascript
-fetch('http://localhost:3000/users')
-  .then(res => res.json())
-  .then(data => console.log(data));
-```
 
 **GET** `/users/:id` - Lấy thông tin 1 user theo ID
-```javascript
-fetch('http://localhost:3000/users/1')
-  .then(res => res.json())
-  .then(data => console.log(data));
-```
 
 **POST** `/users` - Tạo user mới
 ```javascript
@@ -85,31 +77,72 @@ fetch('http://localhost:3000/users', {
     role: 'user'
   })
 })
-  .then(res => res.json())
-  .then(data => console.log(data));
 ```
 
 **PATCH** `/users/:id` - Cập nhật thông tin user
-```javascript
-fetch('http://localhost:3000/users/1', {
-  method: 'PATCH',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    age: 26,
-    city: 'TP. Hồ Chí Minh'
-  })
-})
-  .then(res => res.json())
-  .then(data => console.log(data));
-```
 
 **DELETE** `/users/:id` - Xóa user
+
+#### Search & Filter
+
+**GET** `/users/search/by-name?name={name}` - Tìm kiếm user theo tên
 ```javascript
-fetch('http://localhost:3000/users/1', {
-  method: 'DELETE'
+fetch('http://localhost:3000/users/search/by-name?name=Nguyễn')
+```
+
+**GET** `/users/filter/by-role?role={role}` - Lọc users theo vai trò (admin, user, moderator)
+```javascript
+fetch('http://localhost:3000/users/filter/by-role?role=admin')
+```
+
+**GET** `/users/filter/by-city?city={city}` - Lọc users theo thành phố
+```javascript
+fetch('http://localhost:3000/users/filter/by-city?city=Hà Nội')
+```
+
+**GET** `/users/filter/by-age-range?min={min}&max={max}` - Lọc users theo độ tuổi
+```javascript
+fetch('http://localhost:3000/users/filter/by-age-range?min=25&max=30')
+```
+
+#### Statistics
+
+**GET** `/users/stats/overview` - Thống kê tổng quan (tổng số, tuổi trung bình, phân bố theo role/city)
+
+**GET** `/users/stats/by-city` - Thống kê chi tiết theo từng thành phố
+
+#### Bulk Operations
+
+**POST** `/users/bulk` - Tạo nhiều users cùng lúc
+```javascript
+fetch('http://localhost:3000/users/bulk', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify([
+    { name: 'User 1', email: 'user1@example.com', username: 'user1', age: 25, city: 'Hà Nội', role: 'user' },
+    { name: 'User 2', email: 'user2@example.com', username: 'user2', age: 30, city: 'Đà Nẵng', role: 'user' }
+  ])
 })
-  .then(res => res.json())
-  .then(data => console.log(data));
+```
+
+**DELETE** `/users/bulk` - Xóa nhiều users
+```javascript
+fetch('http://localhost:3000/users/bulk', {
+  method: 'DELETE',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ ids: [1, 2, 3] })
+})
+```
+
+#### Update Operations
+
+**PATCH** `/users/:id/role` - Cập nhật vai trò của user
+```javascript
+fetch('http://localhost:3000/users/1/role', {
+  method: 'PATCH',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ role: 'admin' })
+})
 ```
 
 **Sample User Data:**
@@ -129,12 +162,9 @@ fetch('http://localhost:3000/users/1', {
 
 ### 📝 Posts API
 
+#### Basic CRUD Operations
+
 **GET** `/posts` - Lấy danh sách tất cả bài viết
-```javascript
-fetch('http://localhost:3000/posts')
-  .then(res => res.json())
-  .then(data => console.log(data));
-```
 
 **GET** `/posts/:id` - Lấy thông tin 1 bài viết theo ID
 
@@ -151,13 +181,67 @@ fetch('http://localhost:3000/posts', {
     likes: 0
   })
 })
-  .then(res => res.json())
-  .then(data => console.log(data));
 ```
 
 **PATCH** `/posts/:id` - Cập nhật bài viết
 
 **DELETE** `/posts/:id` - Xóa bài viết
+
+#### Search & Filter
+
+**GET** `/posts/search/by-title?title={title}` - Tìm kiếm bài viết theo tiêu đề
+```javascript
+fetch('http://localhost:3000/posts/search/by-title?title=JavaScript')
+```
+
+**GET** `/posts/search/by-content?content={content}` - Tìm kiếm bài viết theo nội dung
+```javascript
+fetch('http://localhost:3000/posts/search/by-content?content=React')
+```
+
+**GET** `/posts/filter/by-category?category={category}` - Lọc bài viết theo danh mục
+```javascript
+fetch('http://localhost:3000/posts/filter/by-category?category=Lập trình')
+```
+
+**GET** `/posts/filter/by-user/:userId` - Lọc bài viết theo user
+```javascript
+fetch('http://localhost:3000/posts/filter/by-user/1')
+```
+
+#### Trending & Popular
+
+**GET** `/posts/trending/most-liked?limit={limit}` - Bài viết được thích nhiều nhất (mặc định: 10)
+```javascript
+fetch('http://localhost:3000/posts/trending/most-liked?limit=5')
+```
+
+**GET** `/posts/trending/recent?limit={limit}` - Bài viết mới nhất (mặc định: 10)
+```javascript
+fetch('http://localhost:3000/posts/trending/recent?limit=5')
+```
+
+#### Statistics
+
+**GET** `/posts/stats/overview` - Thống kê tổng quan (tổng số bài viết, tổng likes, trung bình likes, phân bố danh mục)
+
+**GET** `/posts/stats/by-category` - Thống kê chi tiết theo từng danh mục
+
+#### Like Operations
+
+**POST** `/posts/:id/like` - Thích bài viết (tăng số likes)
+```javascript
+fetch('http://localhost:3000/posts/1/like', {
+  method: 'POST'
+})
+```
+
+**POST** `/posts/:id/unlike` - Bỏ thích bài viết (giảm số likes)
+```javascript
+fetch('http://localhost:3000/posts/1/unlike', {
+  method: 'POST'
+})
+```
 
 **Sample Post Data:**
 ```json
@@ -176,12 +260,9 @@ fetch('http://localhost:3000/posts', {
 
 ### 🛍️ Products API
 
+#### Basic CRUD Operations
+
 **GET** `/products` - Lấy danh sách tất cả sản phẩm
-```javascript
-fetch('http://localhost:3000/products')
-  .then(res => res.json())
-  .then(data => console.log(data));
-```
 
 **GET** `/products/:id` - Lấy thông tin 1 sản phẩm theo ID
 
@@ -200,13 +281,91 @@ fetch('http://localhost:3000/products', {
     rating: 4.5
   })
 })
-  .then(res => res.json())
-  .then(data => console.log(data));
 ```
 
 **PATCH** `/products/:id` - Cập nhật sản phẩm
 
 **DELETE** `/products/:id` - Xóa sản phẩm
+
+#### Search & Filter
+
+**GET** `/products/search/by-name?name={name}` - Tìm kiếm sản phẩm theo tên hoặc mô tả
+```javascript
+fetch('http://localhost:3000/products/search/by-name?name=iPhone')
+```
+
+**GET** `/products/filter/by-category?category={category}` - Lọc sản phẩm theo danh mục
+```javascript
+fetch('http://localhost:3000/products/filter/by-category?category=Điện thoại')
+```
+
+**GET** `/products/filter/by-price-range?min={min}&max={max}` - Lọc sản phẩm theo khoảng giá
+```javascript
+fetch('http://localhost:3000/products/filter/by-price-range?min=10000000&max=30000000')
+```
+
+**GET** `/products/filter/in-stock?minStock={minStock}` - Lấy sản phẩm còn hàng (mặc định: minStock=1)
+```javascript
+fetch('http://localhost:3000/products/filter/in-stock?minStock=10')
+```
+
+**GET** `/products/filter/low-stock?threshold={threshold}` - Lấy sản phẩm sắp hết hàng (mặc định: threshold=20)
+```javascript
+fetch('http://localhost:3000/products/filter/low-stock?threshold=15')
+```
+
+#### Trending & Popular
+
+**GET** `/products/trending/top-rated?limit={limit}` - Sản phẩm đánh giá cao nhất (mặc định: 10)
+```javascript
+fetch('http://localhost:3000/products/trending/top-rated?limit=5')
+```
+
+**GET** `/products/trending/most-expensive?limit={limit}` - Sản phẩm giá cao nhất (mặc định: 10)
+```javascript
+fetch('http://localhost:3000/products/trending/most-expensive?limit=5')
+```
+
+**GET** `/products/trending/best-deals?limit={limit}` - Sản phẩm có giá trị tốt nhất (rating/price ratio) (mặc định: 10)
+```javascript
+fetch('http://localhost:3000/products/trending/best-deals?limit=5')
+```
+
+#### Statistics
+
+**GET** `/products/stats/overview` - Thống kê tổng quan (tổng số, giá trung bình, rating trung bình, tồn kho, v.v.)
+
+**GET** `/products/stats/by-category` - Thống kê chi tiết theo từng danh mục
+
+#### Update Operations
+
+**PATCH** `/products/:id/stock` - Cập nhật số lượng tồn kho
+```javascript
+fetch('http://localhost:3000/products/1/stock', {
+  method: 'PATCH',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ stock: 100 })
+})
+```
+
+**PATCH** `/products/:id/price` - Cập nhật giá sản phẩm
+```javascript
+fetch('http://localhost:3000/products/1/price', {
+  method: 'PATCH',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ price: 25990000 })
+})
+```
+
+**POST** `/products/:id/discount` - Áp dụng giảm giá (phần trăm)
+```javascript
+fetch('http://localhost:3000/products/1/discount', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ percentage: 10 })
+})
+// Response includes originalPrice, discount, saved amount
+```
 
 **Sample Product Data:**
 ```json
@@ -226,12 +385,9 @@ fetch('http://localhost:3000/products', {
 
 ### 💬 Comments API
 
+#### Basic CRUD Operations
+
 **GET** `/comments` - Lấy danh sách tất cả comments
-```javascript
-fetch('http://localhost:3000/comments')
-  .then(res => res.json())
-  .then(data => console.log(data));
-```
 
 **GET** `/comments/:id` - Lấy thông tin 1 comment theo ID
 
@@ -247,13 +403,79 @@ fetch('http://localhost:3000/comments', {
     content: 'Bình luận của tôi...'
   })
 })
-  .then(res => res.json())
-  .then(data => console.log(data));
 ```
 
 **PATCH** `/comments/:id` - Cập nhật comment
 
 **DELETE** `/comments/:id` - Xóa comment
+
+#### Search & Filter
+
+**GET** `/comments/search/by-content?content={content}` - Tìm kiếm comment theo nội dung
+```javascript
+fetch('http://localhost:3000/comments/search/by-content?content=hữu ích')
+```
+
+**GET** `/comments/filter/by-post/:postId` - Lấy tất cả comments của 1 bài viết
+```javascript
+fetch('http://localhost:3000/comments/filter/by-post/1')
+```
+
+**GET** `/comments/filter/by-user/:userId` - Lấy tất cả comments của 1 user
+```javascript
+fetch('http://localhost:3000/comments/filter/by-user/2')
+```
+
+**GET** `/comments/filter/by-username?username={username}` - Lọc comments theo tên user
+```javascript
+fetch('http://localhost:3000/comments/filter/by-username?username=Nguyễn')
+```
+
+#### Recent Comments
+
+**GET** `/comments/trending/recent?limit={limit}` - Lấy comments mới nhất (mặc định: 10)
+```javascript
+fetch('http://localhost:3000/comments/trending/recent?limit=5')
+```
+
+**GET** `/comments/trending/recent-by-post/:postId?limit={limit}` - Lấy comments mới nhất của 1 bài viết (mặc định: 10)
+```javascript
+fetch('http://localhost:3000/comments/trending/recent-by-post/1?limit=5')
+```
+
+#### Statistics
+
+**GET** `/comments/stats/overview` - Thống kê tổng quan (tổng số comments, unique users, unique posts, trung bình comments/post, v.v.)
+
+**GET** `/comments/stats/by-post` - Thống kê số lượng comments theo từng bài viết
+
+**GET** `/comments/stats/by-user` - Thống kê số lượng comments theo từng user
+
+**GET** `/comments/stats/most-active-users?limit={limit}` - Lấy danh sách users hoạt động nhiều nhất (mặc định: 10)
+```javascript
+fetch('http://localhost:3000/comments/stats/most-active-users?limit=5')
+```
+
+#### Bulk Operations
+
+**POST** `/comments/bulk` - Tạo nhiều comments cùng lúc
+```javascript
+fetch('http://localhost:3000/comments/bulk', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify([
+    { postId: 1, userId: 2, userName: 'User 1', content: 'Comment 1' },
+    { postId: 1, userId: 3, userName: 'User 2', content: 'Comment 2' }
+  ])
+})
+```
+
+**DELETE** `/comments/bulk/by-post/:postId` - Xóa tất cả comments của 1 bài viết
+```javascript
+fetch('http://localhost:3000/comments/bulk/by-post/1', {
+  method: 'DELETE'
+})
+```
 
 **Sample Comment Data:**
 ```json
@@ -340,6 +562,10 @@ async function updatePost(postId) {
 ## 🔧 Features
 
 - ✅ RESTful API với đầy đủ CRUD operations
+- ✅ Advanced search & filter endpoints
+- ✅ Statistics & analytics endpoints
+- ✅ Bulk operations support
+- ✅ Trending & popular content endpoints
 - ✅ CORS enabled - truy cập từ mọi origin
 - ✅ Mock data phong phú bằng tiếng Việt
 - ✅ Response nhanh chóng với in-memory storage
