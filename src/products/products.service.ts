@@ -54,8 +54,122 @@ export class ProductsService {
     const productIndex = this.products.findIndex(product => product.id === id);
     if (productIndex === -1) return null;
     
-    const removedProduct = this.products[productIndex];
+    const removed = this.products[productIndex];
     this.products.splice(productIndex, 1);
-    return removedProduct;
+    return removed;
+  }
+
+  searchByName(name: string) {
+    if (!name) return [];
+    return this.products.filter(product => 
+      product.name.toLowerCase().includes(name.toLowerCase()) ||
+      product.description.toLowerCase().includes(name.toLowerCase())
+    );
+  }
+
+  filterByCategory(category: string) {
+    if (!category) return this.products;
+    return this.products.filter(product => product.category === category);
+  }
+
+  filterByPriceRange(min: number, max: number) {
+    if (!min || !max) return this.products;
+    return this.products.filter(product => product.price >= min && product.price <= max);
+  }
+
+  getInStock(minStock: number = 1) {
+    return this.products.filter(product => product.stock >= minStock);
+  }
+
+  getLowStock(threshold: number = 20) {
+    return this.products.filter(product => product.stock > 0 && product.stock <= threshold);
+  }
+
+  getTopRated(limit: number = 10) {
+    return [...this.products]
+      .sort((a, b) => b.rating - a.rating)
+      .slice(0, limit);
+  }
+
+  getMostExpensive(limit: number = 10) {
+    return [...this.products]
+      .sort((a, b) => b.price - a.price)
+      .slice(0, limit);
+  }
+
+  getBestDeals(limit: number = 10) {
+    // Sort by rating-to-price ratio (best value)
+    return [...this.products]
+      .sort((a, b) => (b.rating / b.price * 1000000) - (a.rating / a.price * 1000000))
+      .slice(0, limit);
+  }
+
+  getStatistics() {
+    return {
+      total: this.products.length,
+      totalValue: this.products.reduce((sum, product) => sum + (product.price * product.stock), 0),
+      averagePrice: this.products.reduce((sum, product) => sum + product.price, 0) / this.products.length,
+      averageRating: this.products.reduce((sum, product) => sum + product.rating, 0) / this.products.length,
+      totalStock: this.products.reduce((sum, product) => sum + product.stock, 0),
+      inStockCount: this.products.filter(p => p.stock > 0).length,
+      outOfStockCount: this.products.filter(p => p.stock === 0).length,
+      categoriesCount: new Set(this.products.map(p => p.category)).size,
+    };
+  }
+
+  getStatsByCategory() {
+    const categoryStats = this.products.reduce((acc, product) => {
+      if (!acc[product.category]) {
+        acc[product.category] = {
+          count: 0,
+          totalValue: 0,
+          averagePrice: 0,
+          averageRating: 0,
+          totalRating: 0,
+          totalStock: 0,
+        };
+      }
+      acc[product.category].count++;
+      acc[product.category].totalValue += product.price * product.stock;
+      acc[product.category].totalRating += product.rating;
+      acc[product.category].totalStock += product.stock;
+      return acc;
+    }, {} as Record<string, any>);
+
+    Object.keys(categoryStats).forEach(category => {
+      const stats = categoryStats[category];
+      stats.averagePrice = stats.totalValue / stats.totalStock;
+      stats.averageRating = stats.totalRating / stats.count;
+      delete stats.totalRating;
+    });
+
+    return categoryStats;
+  }
+
+  updateStock(id: number, stock: number) {
+    const product = this.products.find(product => product.id === id);
+    if (!product) return null;
+    product.stock = stock;
+    return product;
+  }
+
+  updatePrice(id: number, price: number) {
+    const product = this.products.find(product => product.id === id);
+    if (!product) return null;
+    product.price = price;
+    return product;
+  }
+
+  applyDiscount(id: number, percentage: number) {
+    const product = this.products.find(product => product.id === id);
+    if (!product) return null;
+    const originalPrice = product.price;
+    product.price = Math.round(product.price * (1 - percentage / 100));
+    return {
+      ...product,
+      originalPrice,
+      discount: percentage,
+      saved: originalPrice - product.price,
+    };
   }
 }
