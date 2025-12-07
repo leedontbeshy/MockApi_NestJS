@@ -50,8 +50,88 @@ export class PostsService {
     const postIndex = this.posts.findIndex(post => post.id === id);
     if (postIndex === -1) return null;
     
-    const removedPost = this.posts[postIndex];
+    const removed = this.posts[postIndex];
     this.posts.splice(postIndex, 1);
-    return removedPost;
+    return removed;
+  }
+
+  searchByTitle(title: string) {
+    if (!title) return [];
+    return this.posts.filter(post => 
+      post.title.toLowerCase().includes(title.toLowerCase())
+    );
+  }
+
+  searchByContent(content: string) {
+    if (!content) return [];
+    return this.posts.filter(post => 
+      post.content.toLowerCase().includes(content.toLowerCase())
+    );
+  }
+
+  filterByCategory(category: string) {
+    if (!category) return this.posts;
+    return this.posts.filter(post => post.category === category);
+  }
+
+  filterByUser(userId: number) {
+    return this.posts.filter(post => post.userId === userId);
+  }
+
+  getMostLiked(limit: number = 10) {
+    return [...this.posts]
+      .sort((a, b) => b.likes - a.likes)
+      .slice(0, limit);
+  }
+
+  getRecent(limit: number = 10) {
+    return [...this.posts]
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, limit);
+  }
+
+  getStatistics() {
+    return {
+      total: this.posts.length,
+      totalLikes: this.posts.reduce((sum, post) => sum + post.likes, 0),
+      averageLikes: this.posts.reduce((sum, post) => sum + post.likes, 0) / this.posts.length,
+      categoriesCount: new Set(this.posts.map(post => post.category)).size,
+      categoryDistribution: this.posts.reduce((acc, post) => {
+        acc[post.category] = (acc[post.category] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>),
+    };
+  }
+
+  getStatsByCategory() {
+    const categoryStats = this.posts.reduce((acc, post) => {
+      if (!acc[post.category]) {
+        acc[post.category] = { count: 0, totalLikes: 0, averageLikes: 0 };
+      }
+      acc[post.category].count++;
+      acc[post.category].totalLikes += post.likes;
+      return acc;
+    }, {} as Record<string, { count: number; totalLikes: number; averageLikes: number }>);
+
+    Object.keys(categoryStats).forEach(category => {
+      categoryStats[category].averageLikes = 
+        categoryStats[category].totalLikes / categoryStats[category].count;
+    });
+
+    return categoryStats;
+  }
+
+  likePost(id: number) {
+    const post = this.posts.find(post => post.id === id);
+    if (!post) return null;
+    post.likes++;
+    return post;
+  }
+
+  unlikePost(id: number) {
+    const post = this.posts.find(post => post.id === id);
+    if (!post) return null;
+    if (post.likes > 0) post.likes--;
+    return post;
   }
 }
