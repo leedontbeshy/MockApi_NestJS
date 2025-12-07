@@ -49,8 +49,91 @@ export class UsersService {
     const userIndex = this.users.findIndex(user => user.id === id);
     if (userIndex === -1) return null;
     
-    const removedUser = this.users[userIndex];
+    const removed = this.users[userIndex];
     this.users.splice(userIndex, 1);
-    return removedUser;
+    return removed;
+  }
+
+  searchByName(name: string) {
+    if (!name) return [];
+    return this.users.filter(user => 
+      user.name.toLowerCase().includes(name.toLowerCase())
+    );
+  }
+
+  filterByRole(role: string) {
+    if (!role) return this.users;
+    return this.users.filter(user => user.role === role);
+  }
+
+  filterByCity(city: string) {
+    if (!city) return this.users;
+    return this.users.filter(user => user.city === city);
+  }
+
+  filterByAgeRange(min: number, max: number) {
+    if (!min || !max) return this.users;
+    return this.users.filter(user => user.age >= min && user.age <= max);
+  }
+
+  getStatistics() {
+    return {
+      total: this.users.length,
+      averageAge: this.users.reduce((sum, user) => sum + user.age, 0) / this.users.length,
+      roleDistribution: this.users.reduce((acc, user) => {
+        acc[user.role] = (acc[user.role] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>),
+      cityDistribution: this.users.reduce((acc, user) => {
+        acc[user.city] = (acc[user.city] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>),
+    };
+  }
+
+  getStatsByCity() {
+    const cityStats = this.users.reduce((acc, user) => {
+      if (!acc[user.city]) {
+        acc[user.city] = { count: 0, averageAge: 0, totalAge: 0 };
+      }
+      acc[user.city].count++;
+      acc[user.city].totalAge += user.age;
+      return acc;
+    }, {} as Record<string, { count: number; averageAge: number; totalAge: number }>);
+
+    Object.keys(cityStats).forEach(city => {
+      cityStats[city].averageAge = cityStats[city].totalAge / cityStats[city].count;
+      delete cityStats[city].totalAge;
+    });
+
+    return cityStats;
+  }
+
+  createBulk(createUserDtos: CreateUserDto[]) {
+    const newUsers = createUserDtos.map(dto => ({
+      id: this.nextId++,
+      ...dto,
+    } as User));
+    this.users.push(...newUsers);
+    return newUsers;
+  }
+
+  removeBulk(ids: number[]) {
+    const removed = [];
+    ids.forEach(id => {
+      const userIndex = this.users.findIndex(user => user.id === id);
+      if (userIndex !== -1) {
+        removed.push(this.users[userIndex]);
+        this.users.splice(userIndex, 1);
+      }
+    });
+    return { removed: removed.length, users: removed };
+  }
+
+  updateRole(id: number, role: string) {
+    const user = this.users.find(user => user.id === id);
+    if (!user) return null;
+    user.role = role;
+    return user;
   }
 }
