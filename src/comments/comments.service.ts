@@ -56,8 +56,137 @@ export class CommentsService {
     const commentIndex = this.comments.findIndex(comment => comment.id === id);
     if (commentIndex === -1) return null;
     
-    const removedComment = this.comments[commentIndex];
+    const removed = this.comments[commentIndex];
     this.comments.splice(commentIndex, 1);
-    return removedComment;
+    return removed;
+  }
+
+  searchByContent(content: string) {
+    if (!content) return [];
+    return this.comments.filter(comment => 
+      comment.content.toLowerCase().includes(content.toLowerCase())
+    );
+  }
+
+  filterByPost(postId: number) {
+    return this.comments.filter(comment => comment.postId === postId);
+  }
+
+  filterByUser(userId: number) {
+    return this.comments.filter(comment => comment.userId === userId);
+  }
+
+  filterByUsername(username: string) {
+    if (!username) return this.comments;
+    return this.comments.filter(comment => 
+      comment.userName.toLowerCase().includes(username.toLowerCase())
+    );
+  }
+
+  getRecent(limit: number = 10) {
+    return [...this.comments]
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, limit);
+  }
+
+  getRecentByPost(postId: number, limit: number = 10) {
+    return this.comments
+      .filter(comment => comment.postId === postId)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, limit);
+  }
+
+  getStatistics() {
+    const uniqueUsers = new Set(this.comments.map(c => c.userId)).size;
+    const uniquePosts = new Set(this.comments.map(c => c.postId)).size;
+    
+    return {
+      total: this.comments.length,
+      uniqueUsers,
+      uniquePosts,
+      averageCommentsPerPost: this.comments.length / uniquePosts,
+      averageCommentsPerUser: this.comments.length / uniqueUsers,
+    };
+  }
+
+  getStatsByPost() {
+    const postStats = this.comments.reduce((acc, comment) => {
+      if (!acc[comment.postId]) {
+        acc[comment.postId] = { count: 0, users: new Set() };
+      }
+      acc[comment.postId].count++;
+      acc[comment.postId].users.add(comment.userId);
+      return acc;
+    }, {} as Record<number, { count: number; users: Set<number> }>);
+
+    const result = {} as Record<number, { count: number; uniqueUsers: number }>;
+    Object.keys(postStats).forEach(postId => {
+      result[+postId] = {
+        count: postStats[+postId].count,
+        uniqueUsers: postStats[+postId].users.size,
+      };
+    });
+
+    return result;
+  }
+
+  getStatsByUser() {
+    const userStats = this.comments.reduce((acc, comment) => {
+      if (!acc[comment.userId]) {
+        acc[comment.userId] = {
+          userName: comment.userName,
+          count: 0,
+          posts: new Set(),
+        };
+      }
+      acc[comment.userId].count++;
+      acc[comment.userId].posts.add(comment.postId);
+      return acc;
+    }, {} as Record<number, { userName: string; count: number; posts: Set<number> }>);
+
+    const result = {} as Record<number, { userName: string; count: number; uniquePosts: number }>;
+    Object.keys(userStats).forEach(userId => {
+      result[+userId] = {
+        userName: userStats[+userId].userName,
+        count: userStats[+userId].count,
+        uniquePosts: userStats[+userId].posts.size,
+      };
+    });
+
+    return result;
+  }
+
+  getMostActiveUsers(limit: number = 10) {
+    const userComments = this.comments.reduce((acc, comment) => {
+      if (!acc[comment.userId]) {
+        acc[comment.userId] = {
+          userId: comment.userId,
+          userName: comment.userName,
+          count: 0,
+        };
+      }
+      acc[comment.userId].count++;
+      return acc;
+    }, {} as Record<number, { userId: number; userName: string; count: number }>);
+
+    return Object.values(userComments)
+      .sort((a, b) => b.count - a.count)
+      .slice(0, limit);
+  }
+
+  createBulk(createCommentDtos: CreateCommentDto[]) {
+    const newComments = createCommentDtos.map(dto => ({
+      id: this.nextId++,
+      ...dto,
+      createdAt: new Date().toISOString(),
+    } as Comment));
+    this.comments.push(...newComments);
+    return newComments;
+  }
+
+  removeByPost(postId: number) {
+    const toRemove = this.comments.filter(comment => comment.postId === postId);
+    this.comments = this.comments.filter(comment => comment.postId !== postId);
+    return { removed: toRemove.length, comments: toRemove };
   }
 }
