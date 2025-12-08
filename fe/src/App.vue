@@ -13,6 +13,8 @@ const error = ref(null)
 const searchQuery = ref('')
 const showAddModal = ref(false)
 const editingItem = ref(null)
+const currentPage = ref(1)
+const itemsPerPage = ref(10)
 
 // Form data
 const newItem = ref({
@@ -66,6 +68,7 @@ const fetchData = async (endpoint) => {
 const switchTab = (tab) => {
   activeTab.value = tab
   searchQuery.value = ''
+  currentPage.value = 1
   fetchData(tab)
 }
 
@@ -182,6 +185,22 @@ const filteredData = computed(() => {
   })
 })
 
+const paginatedData = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value
+  const end = start + itemsPerPage.value
+  return filteredData.value.slice(start, end)
+})
+
+const totalPages = computed(() => {
+  return Math.ceil(filteredData.value.length / itemsPerPage.value)
+})
+
+const changePage = (page) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page
+  }
+}
+
 const stats = computed(() => {
   if (activeTab.value === 'users') {
     const avgAge = users.value.length ? 
@@ -293,7 +312,7 @@ onMounted(() => {
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="user in filteredData" :key="user.id">
+                <tr v-for="user in paginatedData" :key="user.id">
                   <td>{{ user.id }}</td>
                   <td>{{ user.name }}</td>
                   <td>{{ user.email }}</td>
@@ -327,7 +346,7 @@ onMounted(() => {
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="post in filteredData" :key="post.id">
+                <tr v-for="post in paginatedData" :key="post.id">
                   <td>{{ post.id }}</td>
                   <td>{{ post.title }}</td>
                   <td class="truncate">{{ post.content }}</td>
@@ -362,7 +381,7 @@ onMounted(() => {
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="product in filteredData" :key="product.id">
+                <tr v-for="product in paginatedData" :key="product.id">
                   <td>{{ product.id }}</td>
                   <td>{{ product.name }}</td>
                   <td class="truncate">{{ product.description }}</td>
@@ -396,7 +415,7 @@ onMounted(() => {
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="comment in filteredData" :key="comment.id">
+                <tr v-for="comment in paginatedData" :key="comment.id">
                   <td>{{ comment.id }}</td>
                   <td class="truncate">{{ comment.text }}</td>
                   <td>{{ comment.author }}</td>
@@ -410,6 +429,24 @@ onMounted(() => {
               </tbody>
             </table>
           </div>
+        </div>
+
+        <!-- Pagination -->
+        <div v-if="totalPages > 1" class="pagination">
+          <button @click="changePage(1)" :disabled="currentPage === 1" class="page-btn">«</button>
+          <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1" class="page-btn">‹</button>
+          
+          <button 
+            v-for="page in totalPages" 
+            :key="page"
+            @click="changePage(page)"
+            :class="['page-btn', { active: currentPage === page }]"
+          >
+            {{ page }}
+          </button>
+          
+          <button @click="changePage(currentPage + 1)" :disabled="currentPage === totalPages" class="page-btn">›</button>
+          <button @click="changePage(totalPages)" :disabled="currentPage === totalPages" class="page-btn">»</button>
         </div>
       </div>
     </main>
@@ -833,5 +870,39 @@ td:last-child {
 
 .btn-save:hover {
   background: #333;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 30px;
+  padding: 20px 0;
+}
+
+.page-btn {
+  padding: 8px 12px;
+  border: 2px solid #000;
+  background: #fff;
+  color: #000;
+  cursor: pointer;
+  font-weight: 600;
+  min-width: 40px;
+  transition: all 0.2s;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: #000;
+  color: #fff;
+}
+
+.page-btn.active {
+  background: #000;
+  color: #fff;
+}
+
+.page-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 </style>
