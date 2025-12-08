@@ -17,6 +17,7 @@ const currentPage = ref(1)
 const itemsPerPage = ref(10)
 const sortBy = ref('')
 const sortOrder = ref('asc')
+const darkMode = ref(false)
 
 // Form data
 const newItem = ref({
@@ -322,10 +323,17 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="app-container">
+  <div class="app-container" :class="{ 'dark-mode': darkMode }">
     <header>
-      <h1>Web Linh Tinh</h1>
-      <p>Mock API Dashboard</p>
+      <div class="header-content">
+        <div>
+          <h1>Web Linh Tinh</h1>
+          <p>Mock API Dashboard</p>
+        </div>
+        <button @click="darkMode = !darkMode" class="theme-toggle">
+          {{ darkMode ? '☀️ Light' : '🌙 Dark' }}
+        </button>
+      </div>
     </header>
 
     <div class="toolbar">
@@ -605,12 +613,18 @@ onMounted(() => {
 }
 
 header {
-  text-align: center;
   margin-bottom: 30px;
   padding: 30px;
   background: #000;
   color: #fff;
   border: 2px solid #000;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
 }
 
 header h1 {
@@ -624,6 +638,23 @@ header p {
   margin: 10px 0 0;
   font-size: 1.1em;
   opacity: 0.8;
+}
+
+.theme-toggle {
+  padding: 10px 20px;
+  background: #fff;
+  color: #000;
+  border: 2px solid #fff;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.theme-toggle:hover {
+  background: transparent;
+  color: #fff;
 }
 
 .toolbar {
@@ -1011,5 +1042,207 @@ td:last-child {
 .page-btn:disabled {
   opacity: 0.3;
   cursor: not-allowed;
+}
+
+/* Dark Mode */
+.app-container.dark-mode {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.dark-mode header {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+}
+
+.dark-mode .theme-toggle {
+  background: #000;
+  color: #fff;
+  border-color: #000;
+}
+
+.dark-mode .theme-toggle:hover {
+  background: transparent;
+  color: #000;
+}
+
+.dark-mode .tabs {
+  border-color: #fff;
+}
+
+.dark-mode .tabs button {
+  background: #1a1a1a;
+  color: #fff;
+  border-right-color: #fff;
+}
+
+.dark-mode .tabs button:hover {
+  background: #333;
+}
+
+.dark-mode .tabs button.active {
+  background: #fff;
+  color: #000;
+}
+
+.dark-mode .search-input {
+  background: #1a1a1a;
+  color: #fff;
+  border-color: #fff;
+}
+
+.dark-mode .search-input:focus {
+  background: #222;
+}
+
+.dark-mode .btn-export,
+.dark-mode .btn-add {
+  background: #1a1a1a;
+  color: #fff;
+  border-color: #fff;
+}
+
+.dark-mode .btn-add {
+  background: #fff;
+  color: #000;
+}
+
+.dark-mode .btn-export:hover {
+  background: #fff;
+  color: #000;
+}
+
+.dark-mode .btn-add:hover {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.dark-mode .stat-card {
+  background: #1a1a1a;
+  border-color: #fff;
+}
+
+.dark-mode .stat-card:hover {
+  background: #fff;
+  color: #000;
+}
+
+.dark-mode .data-container h2 {
+  color: #fff;
+  border-color: #fff;
+}
+
+.dark-mode .table-container {
+  border-color: #fff;
+  background: #1a1a1a;
+}
+
+.dark-mode thead {
+  background: #fff;
+  color: #000;
+}
+
+.dark-mode th {
+  border-right-color: #ddd;
+}
+
+.dark-mode th.sortable:hover {
+  background: #f0f0f0;
+}
+
+.dark-mode tbody tr {
+  border-bottom-color: #fff;
+}
+
+.dark-mode tbody tr:hover {
+  background: #222;
+}
+
+.dark-mode td {
+  border-right-color: #333;
+}
+
+.dark-mode .btn-edit,
+.dark-mode .btn-delete {
+  background: #1a1a1a;
+  color: #fff;
+  border-color: #fff;
+}
+
+.dark-mode .btn-edit:hover,
+.dark-mode .btn-delete:hover {
+  background: #fff;
+  color: #000;
+}
+
+.dark-mode .page-btn {
+  background: #1a1a1a;
+  color: #fff;
+  border-color: #fff;
+}
+
+.dark-mode .page-btn:hover:not(:disabled) {
+  background: #fff;
+  color: #000;
+}
+
+.dark-mode .page-btn.active {
+  background: #fff;
+  color: #000;
+}
+
+.dark-mode .modal {
+  background: #1a1a1a;
+  border-color: #fff;
+}
+
+.dark-mode .modal-header {
+  background: #fff;
+  color: #000;
+  border-bottom-color: #fff;
+}
+
+.dark-mode .close-btn {
+  color: #000;
+}
+
+.dark-mode .modal-footer {
+  border-top-color: #fff;
+  background: #222;
+}
+
+.dark-mode .form input,
+.dark-mode .form select,
+.dark-mode .form textarea {
+  background: #1a1a1a;
+  color: #fff;
+  border-color: #fff;
+}
+
+.dark-mode .form input:focus,
+.dark-mode .form select:focus,
+.dark-mode .form textarea:focus {
+  background: #222;
+}
+
+.dark-mode .btn-cancel {
+  background: #1a1a1a;
+  color: #fff;
+  border-color: #fff;
+}
+
+.dark-mode .btn-cancel:hover {
+  background: #333;
+}
+
+.dark-mode .btn-save {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+}
+
+.dark-mode .btn-save:hover {
+  background: #f0f0f0;
 }
 </style>
