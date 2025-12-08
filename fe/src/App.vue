@@ -182,6 +182,53 @@ const filteredData = computed(() => {
   })
 })
 
+const stats = computed(() => {
+  if (activeTab.value === 'users') {
+    const avgAge = users.value.length ? 
+      (users.value.reduce((sum, u) => sum + u.age, 0) / users.value.length).toFixed(1) : 0
+    const cities = [...new Set(users.value.map(u => u.city))].length
+    const admins = users.value.filter(u => u.role === 'admin').length
+    return [
+      { label: 'Total Users', value: users.value.length },
+      { label: 'Avg Age', value: avgAge },
+      { label: 'Cities', value: cities },
+      { label: 'Admins', value: admins }
+    ]
+  } else if (activeTab.value === 'posts') {
+    const totalLikes = posts.value.reduce((sum, p) => sum + (p.likes || 0), 0)
+    const categories = [...new Set(posts.value.map(p => p.category))].length
+    const avgLikes = posts.value.length ? (totalLikes / posts.value.length).toFixed(1) : 0
+    return [
+      { label: 'Total Posts', value: posts.value.length },
+      { label: 'Total Likes', value: totalLikes },
+      { label: 'Categories', value: categories },
+      { label: 'Avg Likes', value: avgLikes }
+    ]
+  } else if (activeTab.value === 'products') {
+    const totalValue = products.value.reduce((sum, p) => sum + (p.price * p.stock), 0).toFixed(2)
+    const lowStock = products.value.filter(p => p.stock < 20).length
+    const avgRating = products.value.length ?
+      (products.value.reduce((sum, p) => sum + (p.rating || 0), 0) / products.value.length).toFixed(1) : 0
+    return [
+      { label: 'Total Products', value: products.value.length },
+      { label: 'Inventory Value', value: `$${totalValue}` },
+      { label: 'Low Stock', value: lowStock },
+      { label: 'Avg Rating', value: avgRating }
+    ]
+  } else {
+    const authors = [...new Set(comments.value.map(c => c.author))].length
+    const postsWithComments = [...new Set(comments.value.map(c => c.postId))].length
+    const avgLength = comments.value.length ?
+      (comments.value.reduce((sum, c) => sum + c.text.length, 0) / comments.value.length).toFixed(0) : 0
+    return [
+      { label: 'Total Comments', value: comments.value.length },
+      { label: 'Unique Authors', value: authors },
+      { label: 'Posts Commented', value: postsWithComments },
+      { label: 'Avg Length', value: avgLength }
+    ]
+  }
+})
+
 onMounted(() => {
   fetchData('users')
 })
@@ -222,6 +269,13 @@ onMounted(() => {
       <div v-else-if="error" class="error">Error: {{ error }}</div>
       
       <div v-else class="data-container">
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+          <div v-for="stat in stats" :key="stat.label" class="stat-card">
+            <div class="stat-label">{{ stat.label }}</div>
+            <div class="stat-value">{{ stat.value }}</div>
+          </div>
+        </div>
         <!-- Users -->
         <div v-if="activeTab === 'users'">
           <h2>Users ({{ filteredData.length }})</h2>
@@ -538,6 +592,40 @@ header p {
   color: #000;
   border: 2px solid #000;
   background: #fff;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  border: 2px solid #000;
+  padding: 20px;
+  background: #fff;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.stat-card:hover {
+  background: #000;
+  color: #fff;
+}
+
+.stat-label {
+  font-size: 0.9em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+  opacity: 0.7;
+}
+
+.stat-value {
+  font-size: 2em;
+  font-weight: 700;
 }
 
 .data-container h2 {
