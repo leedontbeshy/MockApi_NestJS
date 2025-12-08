@@ -233,6 +233,42 @@ const changePage = (page) => {
   }
 }
 
+const exportToCSV = () => {
+  const data = filteredData.value
+  if (!data.length) return
+  
+  const headers = Object.keys(data[0])
+  const csv = [
+    headers.join(','),
+    ...data.map(row => headers.map(header => {
+      const value = row[header]
+      return typeof value === 'string' && value.includes(',') ? `"${value}"` : value
+    }).join(','))
+  ].join('\n')
+  
+  const blob = new Blob([csv], { type: 'text/csv' })
+  const url = window.URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `${activeTab.value}_${new Date().toISOString().split('T')[0]}.csv`
+  a.click()
+  window.URL.revokeObjectURL(url)
+}
+
+const exportToJSON = () => {
+  const data = filteredData.value
+  if (!data.length) return
+  
+  const json = JSON.stringify(data, null, 2)
+  const blob = new Blob([json], { type: 'application/json' })
+  const url = window.URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `${activeTab.value}_${new Date().toISOString().split('T')[0]}.json`
+  a.click()
+  window.URL.revokeObjectURL(url)
+}
+
 const stats = computed(() => {
   if (activeTab.value === 'users') {
     const avgAge = users.value.length ? 
@@ -311,6 +347,8 @@ onMounted(() => {
           placeholder="Search..."
           class="search-input"
         />
+        <button @click="exportToCSV" class="btn-export">Export CSV</button>
+        <button @click="exportToJSON" class="btn-export">Export JSON</button>
         <button @click="openAddModal" class="btn-add">+ Add New</button>
       </div>
     </div>
@@ -644,6 +682,22 @@ header p {
 
 .search-input:focus {
   background: #f9f9f9;
+}
+
+.btn-export {
+  padding: 10px 16px;
+  background: #fff;
+  color: #000;
+  border: 2px solid #000;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.btn-export:hover {
+  background: #000;
+  color: #fff;
 }
 
 .btn-add {
