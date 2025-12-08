@@ -15,6 +15,8 @@ const showAddModal = ref(false)
 const editingItem = ref(null)
 const currentPage = ref(1)
 const itemsPerPage = ref(10)
+const sortBy = ref('')
+const sortOrder = ref('asc')
 
 // Form data
 const newItem = ref({
@@ -69,7 +71,19 @@ const switchTab = (tab) => {
   activeTab.value = tab
   searchQuery.value = ''
   currentPage.value = 1
+  sortBy.value = ''
+  sortOrder.value = 'asc'
   fetchData(tab)
+}
+
+const sortData = (column) => {
+  if (sortBy.value === column) {
+    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'
+  } else {
+    sortBy.value = column
+    sortOrder.value = 'asc'
+  }
+  currentPage.value = 1
 }
 
 const deleteItem = async (id) => {
@@ -170,19 +184,37 @@ const saveItem = async () => {
 }
 
 const filteredData = computed(() => {
-  const data = activeTab.value === 'users' ? users.value
+  let data = activeTab.value === 'users' ? users.value
     : activeTab.value === 'posts' ? posts.value
     : activeTab.value === 'products' ? products.value
     : comments.value
 
-  if (!searchQuery.value) return data
+  // Filter by search query
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase()
+    data = data.filter(item => {
+      return Object.values(item).some(val => 
+        String(val).toLowerCase().includes(query)
+      )
+    })
+  }
 
-  const query = searchQuery.value.toLowerCase()
-  return data.filter(item => {
-    return Object.values(item).some(val => 
-      String(val).toLowerCase().includes(query)
-    )
-  })
+  // Sort data
+  if (sortBy.value) {
+    data = [...data].sort((a, b) => {
+      let aVal = a[sortBy.value]
+      let bVal = b[sortBy.value]
+      
+      if (typeof aVal === 'string') aVal = aVal.toLowerCase()
+      if (typeof bVal === 'string') bVal = bVal.toLowerCase()
+      
+      if (aVal < bVal) return sortOrder.value === 'asc' ? -1 : 1
+      if (aVal > bVal) return sortOrder.value === 'asc' ? 1 : -1
+      return 0
+    })
+  }
+
+  return data
 })
 
 const paginatedData = computed(() => {
@@ -302,12 +334,24 @@ onMounted(() => {
             <table>
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Age</th>
-                  <th>City</th>
-                  <th>Role</th>
+                  <th @click="sortData('id')" class="sortable">
+                    ID <span v-if="sortBy === 'id'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+                  </th>
+                  <th @click="sortData('name')" class="sortable">
+                    Name <span v-if="sortBy === 'name'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+                  </th>
+                  <th @click="sortData('email')" class="sortable">
+                    Email <span v-if="sortBy === 'email'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+                  </th>
+                  <th @click="sortData('age')" class="sortable">
+                    Age <span v-if="sortBy === 'age'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+                  </th>
+                  <th @click="sortData('city')" class="sortable">
+                    City <span v-if="sortBy === 'city'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+                  </th>
+                  <th @click="sortData('role')" class="sortable">
+                    Role <span v-if="sortBy === 'role'">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+                  </th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -695,6 +739,15 @@ th {
   text-align: left;
   font-weight: 600;
   border-right: 1px solid #333;
+}
+
+th.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+th.sortable:hover {
+  background: #333;
 }
 
 th:last-child {
