@@ -367,6 +367,7 @@ onMounted(() => {
         <button @click="exportToCSV" class="btn-export">Export CSV</button>
         <button @click="exportToJSON" class="btn-export">Export JSON</button>
         <button @click="openAddModal" class="btn-add">+ Add New</button>
+        <button @click="fetchData(activeTab)" class="btn-refresh">🔄 Refresh</button>
       </div>
     </div>
 
@@ -759,6 +760,22 @@ header p {
   color: #000;
 }
 
+.btn-refresh {
+  padding: 10px 16px;
+  background: #fff;
+  color: #000;
+  border: 2px solid #000;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.btn-refresh:hover {
+  background: #000;
+  color: #fff;
+}
+
 .loading, .error {
   text-align: center;
   padding: 60px 20px;
@@ -1128,6 +1145,17 @@ td:last-child {
 .dark-mode .btn-add:hover {
   background: #1a1a1a;
   color: #fff;
+}
+
+.dark-mode .btn-refresh {
+  background: #1a1a1a;
+  color: #fff;
+  border-color: #fff;
+}
+
+.dark-mode .btn-refresh:hover {
+  background: #fff;
+  color: #000;
 }
 
 .dark-mode .stat-card {
