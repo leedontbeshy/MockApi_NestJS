@@ -15,6 +15,7 @@ const showAddModal = ref(false)
 const editingItem = ref(null)
 const currentPage = ref(1)
 const itemsPerPage = ref(10)
+const showScrollTop = ref(false)
 const sortBy = ref('')
 const sortOrder = ref('asc')
 const darkMode = ref(false)
@@ -317,8 +318,15 @@ const stats = computed(() => {
   }
 })
 
+const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
 onMounted(() => {
   fetchData('users')
+  window.addEventListener('scroll', () => {
+    showScrollTop.value = window.scrollY > 300
+  })
 })
 </script>
 
@@ -596,6 +604,9 @@ onMounted(() => {
         </div>
       </div>
     </div>
+
+    <!-- Scroll to top button -->
+    <button v-if="showScrollTop" @click="scrollToTop" class="scroll-top">↑</button>
   </div>
 </template>
 
@@ -1244,5 +1255,31 @@ td:last-child {
 
 .dark-mode .btn-save:hover {
   background: #f0f0f0;
+}
+
+.scroll-top {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 50px;
+  height: 50px;
+  background: #000;
+  color: #fff;
+  border: 2px solid #000;
+  font-size: 24px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+  z-index: 999;
+}
+
+.scroll-top:hover {
+  transform: translateY(-5px);
+}
+
+.dark-mode .scroll-top {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
 }
 </style>
