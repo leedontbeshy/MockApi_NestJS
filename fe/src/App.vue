@@ -363,6 +363,7 @@ onMounted(() => {
           type="text" 
           :placeholder="`Search in ${activeTab}...`"
           class="search-input"
+          @keyup.escape="searchQuery = ''"
         />
         <button @click="searchQuery = ''" v-if="searchQuery" class="btn-clear">✕ Clear</button>
         <button @click="exportToCSV" class="btn-export">Export CSV</button>
