@@ -364,6 +364,7 @@ onMounted(() => {
           :placeholder="`Search in ${activeTab}...`"
           class="search-input"
         />
+        <button @click="searchQuery = ''" v-if="searchQuery" class="btn-clear">✕ Clear</button>
         <button @click="exportToCSV" class="btn-export">Export CSV</button>
         <button @click="exportToJSON" class="btn-export">Export JSON</button>
         <button @click="openAddModal" class="btn-add">+ Add New</button>
@@ -752,6 +753,22 @@ header p {
 }
 
 .btn-export:hover {
+  background: #000;
+  color: #fff;
+}
+
+.btn-clear {
+  padding: 10px 16px;
+  background: #fff;
+  color: #000;
+  border: 2px solid #000;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.btn-clear:hover {
   background: #000;
   color: #fff;
 }
@@ -1166,6 +1183,17 @@ td:last-child {
 }
 
 .dark-mode .btn-export:hover {
+  background: #fff;
+  color: #000;
+}
+
+.dark-mode .btn-clear {
+  background: #1a1a1a;
+  color: #fff;
+  border-color: #fff;
+}
+
+.dark-mode .btn-clear:hover {
   background: #fff;
   color: #000;
 }
