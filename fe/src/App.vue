@@ -16,6 +16,7 @@ const editingItem = ref(null)
 const currentPage = ref(1)
 const itemsPerPage = ref(10)
 const showScrollTop = ref(false)
+const lastUpdated = ref(new Date().toLocaleString())
 const sortBy = ref('')
 const sortOrder = ref('asc')
 const darkMode = ref(false)
@@ -336,7 +337,7 @@ onMounted(() => {
       <div class="header-content">
         <div>
           <h1>Web Linh Tinh</h1>
-          <p>Mock API Dashboard</p>
+          <p>Mock API Dashboard | Last updated: {{ lastUpdated }}</p>
         </div>
         <button @click="darkMode = !darkMode" class="theme-toggle">
           {{ darkMode ? '☀️ Light' : '🌙 Dark' }}
