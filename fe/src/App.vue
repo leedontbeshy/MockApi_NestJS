@@ -361,7 +361,7 @@ onMounted(() => {
         <input 
           v-model="searchQuery" 
           type="text" 
-          placeholder="Search..."
+          :placeholder="`Search in ${activeTab}...`"
           class="search-input"
         />
         <button @click="exportToCSV" class="btn-export">Export CSV</button>
