@@ -385,7 +385,10 @@ onMounted(() => {
         </div>
         <!-- Users -->
         <div v-if="activeTab === 'users'">
-          <h2>Users ({{ filteredData.length }})</h2>
+          <div class="section-header">
+            <h2>Users ({{ filteredData.length }})</h2>
+            <span class="count-badge">Showing {{ paginatedData.length }} of {{ filteredData.length }}</span>
+          </div>
           <div class="table-container">
             <table>
               <thead>
@@ -431,7 +434,10 @@ onMounted(() => {
 
         <!-- Posts -->
         <div v-if="activeTab === 'posts'">
-          <h2>Posts ({{ filteredData.length }})</h2>
+          <div class="section-header">
+            <h2>Posts ({{ filteredData.length }})</h2>
+            <span class="count-badge">Showing {{ paginatedData.length }} of {{ filteredData.length }}</span>
+          </div>
           <div class="table-container">
             <table>
               <thead>
@@ -465,7 +471,10 @@ onMounted(() => {
 
         <!-- Products -->
         <div v-if="activeTab === 'products'">
-          <h2>Products ({{ filteredData.length }})</h2>
+          <div class="section-header">
+            <h2>Products ({{ filteredData.length }})</h2>
+            <span class="count-badge">Showing {{ paginatedData.length }} of {{ filteredData.length }}</span>
+          </div>
           <div class="table-container">
             <table>
               <thead>
@@ -501,7 +510,10 @@ onMounted(() => {
 
         <!-- Comments -->
         <div v-if="activeTab === 'comments'">
-          <h2>Comments ({{ filteredData.length }})</h2>
+          <div class="section-header">
+            <h2>Comments ({{ filteredData.length }})</h2>
+            <span class="count-badge">Showing {{ paginatedData.length }} of {{ filteredData.length }}</span>
+          </div>
           <div class="table-container">
             <table>
               <thead>
@@ -823,13 +835,29 @@ header p {
   font-weight: 700;
 }
 
-.data-container h2 {
-  color: #000;
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
-  font-size: 1.8em;
-  font-weight: 700;
   border-bottom: 3px solid #000;
   padding-bottom: 10px;
+}
+
+.data-container h2 {
+  color: #000;
+  margin: 0;
+  font-size: 1.8em;
+  font-weight: 700;
+}
+
+.count-badge {
+  font-size: 0.9em;
+  font-weight: 600;
+  padding: 5px 15px;
+  background: #000;
+  color: #fff;
+  border: 2px solid #000;
 }
 
 .table-container {
@@ -1168,8 +1196,17 @@ td:last-child {
   color: #000;
 }
 
+.dark-mode .section-header {
+  border-color: #fff;
+}
+
 .dark-mode .data-container h2 {
   color: #fff;
+}
+
+.dark-mode .count-badge {
+  background: #fff;
+  color: #000;
   border-color: #fff;
 }
 
