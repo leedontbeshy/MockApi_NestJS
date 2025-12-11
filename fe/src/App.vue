@@ -1,4 +1,5 @@
 <script setup>
+// Main app component
 import { ref, onMounted, computed } from 'vue'
 
 const API_BASE_URL = 'http://localhost:3000'
