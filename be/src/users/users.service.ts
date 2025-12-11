@@ -5,6 +5,7 @@ import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
+  // Sample user data
   private users: User[] = [
     { id: 1, name: 'Nguyễn Văn An', email: 'an.nguyen@example.com', username: 'annguyen', age: 25, city: 'Hà Nội', role: 'admin' },
     { id: 2, name: 'Trần Thị Bình', email: 'binh.tran@example.com', username: 'binhtran', age: 30, city: 'TP. Hồ Chí Minh', role: 'user' },
