@@ -5,6 +5,7 @@ import { Post } from './entities/post.entity';
 
 @Injectable()
 export class PostsService {
+  // Sample post data
   private posts: Post[] = [
     { id: 1, title: 'Học JavaScript cơ bản', content: 'JavaScript là ngôn ngữ lập trình phổ biến nhất hiện nay. Nó được sử dụng để phát triển web, mobile app, và cả backend.', userId: 1, category: 'Lập trình', createdAt: '2025-12-01T10:00:00Z', likes: 120 },
     { id: 2, title: 'React vs Vue - So sánh chi tiết', content: 'React và Vue đều là những framework tuyệt vời. Bài viết này sẽ so sánh chi tiết ưu nhược điểm của từng framework.', userId: 2, category: 'Lập trình', createdAt: '2025-12-02T14:30:00Z', likes: 85 },
