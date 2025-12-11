@@ -2,6 +2,8 @@
 
 Monorepo project tổng hợp các tính năng linh tinh với NestJS backend và Vue.js frontend.
 
+✨ Updated: December 2025
+
 ## 📁 Cấu trúc Project
 
 ```
