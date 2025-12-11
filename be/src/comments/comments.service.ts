@@ -5,6 +5,7 @@ import { Comment } from './entities/comment.entity';
 
 @Injectable()
 export class CommentsService {
+  // Sample comment data
   private comments: Comment[] = [
     { id: 1, postId: 1, userId: 2, userName: 'Trần Thị Bình', content: 'Bài viết rất hữu ích! Cảm ơn tác giả đã chia sẻ.', createdAt: '2025-12-01T10:30:00Z' },
     { id: 2, postId: 1, userId: 3, userName: 'Lê Hoàng Cường', content: 'Có thể giải thích rõ hơn về closure không ạ?', createdAt: '2025-12-01T11:15:00Z' },
