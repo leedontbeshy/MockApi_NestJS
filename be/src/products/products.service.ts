@@ -5,6 +5,7 @@ import { Product } from './entities/product.entity';
 
 @Injectable()
 export class ProductsService {
+  // Sample product data
   private products: Product[] = [
     { id: 1, name: 'iPhone 15 Pro Max', description: 'Smartphone cao cấp từ Apple với chip A17 Pro, camera 48MP', price: 29990000, category: 'Điện thoại', stock: 50, imageUrl: 'https://via.placeholder.com/300x300?text=iPhone+15', rating: 4.8 },
     { id: 2, name: 'Samsung Galaxy S24 Ultra', description: 'Flagship Android với bút S-Pen, màn hình Dynamic AMOLED 2X', price: 27990000, category: 'Điện thoại', stock: 35, imageUrl: 'https://via.placeholder.com/300x300?text=Galaxy+S24', rating: 4.7 },
